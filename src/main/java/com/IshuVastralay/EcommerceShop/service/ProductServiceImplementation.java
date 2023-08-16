@@ -8,10 +8,16 @@ import com.IshuVastralay.EcommerceShop.repository.CategoryRepository;
 import com.IshuVastralay.EcommerceShop.repository.ProductRepository;
 import com.IshuVastralay.EcommerceShop.request.CreateProductRequest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class ProductServiceImplementation implements ProductService{
 
@@ -69,17 +75,26 @@ public class ProductServiceImplementation implements ProductService{
 
     @Override
     public String deleteProduct(Long productId) throws ProductException {
-        return null;
+        Product product=findProductById(productId);
+        product.getSizes().clear();
+        productRepository.delete(product);
+        return "Product Deleted SuccessFully";
     }
 
     @Override
-    public Product updateProduct(Long productId) throws ProductException {
-        return null;
+    public Product updateProduct(Long productId,Product product) throws ProductException {
+        Product tempProduct=findProductById(productId);
+        if(product.getQuantity()!=0){
+            tempProduct.setQuantity(product.getQuantity());
+        }
+        return productRepository.save(tempProduct);
     }
 
     @Override
     public Product findProductById(Long id) throws ProductException {
-        return null;
+        Optional<Product>opt=productRepository.findById(id);
+        if(opt.isPresent())return opt.get();
+        throw new ProductException("Product Is not found-"+id);
     }
 
     @Override
@@ -88,7 +103,25 @@ public class ProductServiceImplementation implements ProductService{
     }
 
     @Override
-    public Page<Product> getAllProduct(String category, List<String> colors, List<String> sizes, Integer minPrice, Integer maxPrice, String miniDiscount, String sort, String stock, Integer pageNumber, Integer pageSize) {
-        return null;
+    public Page<Product> getAllProduct(String category, List<String> colors, List<String> sizes, Integer minPrice, Integer maxPrice, Integer miniDiscount, String sort, String stock, Integer pageNumber, Integer pageSize) {
+        Pageable pageable= PageRequest.of(pageNumber,pageSize);
+        List<Product>productList=productRepository.filterProducts(category,minPrice,maxPrice,miniDiscount,sort);
+        if(!colors.isEmpty()){
+            productList=productList.stream().filter(p->colors.stream().anyMatch(c-> category.equalsIgnoreCase(p.getColor()))).collect(Collectors.toList());
+        }
+        if(stock!=null){
+            if (stock.equals("in_stock")){
+                productList=productList.stream().filter(p-> p.getQuantity()>0).collect(Collectors.toList());
+            }
+            else if(stock.equals("out_of_stock")){
+                productList=productList.stream().filter(p->p.getQuantity()<1).collect(Collectors.toList());
+            }
+        }
+        int startIndex=(int)pageable.getOffset();
+        int endIndex=Math.min(startIndex+pageable.getPageSize(),productList.size());
+        List<Product>pageContent=productList.subList(startIndex,endIndex);
+        Page<Product>filterProduct=new PageImpl<>(pageContent,pageable, productList.size());
+        return filterProduct;
+
     }
 }
