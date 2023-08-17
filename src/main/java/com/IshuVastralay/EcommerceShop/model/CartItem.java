@@ -16,15 +16,15 @@ public class CartItem {
     private Product product;
 
     private String size;
-    private String quantity;
+    private Integer quantity;
     private Integer price;
     private Integer discountedPrice;
-    private Integer userId;
+    private Long userId;
 
     public CartItem() {
     }
 
-    public CartItem(Long id, Cart cart, Product product, String size, String quantity, Integer price, Integer discountedPrice, Integer userId) {
+    public CartItem(Long id, Cart cart, Product product, String size, Integer quantity, Integer price, Integer discountedPrice, Long userId) {
         this.id = id;
         this.cart = cart;
         this.product = product;
@@ -67,11 +67,11 @@ public class CartItem {
         this.size = size;
     }
 
-    public String getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
@@ -91,11 +91,11 @@ public class CartItem {
         this.discountedPrice = discountedPrice;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 }

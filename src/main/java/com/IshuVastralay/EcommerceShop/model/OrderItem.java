@@ -2,12 +2,14 @@ package com.IshuVastralay.EcommerceShop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 import java.time.LocalDateTime;
 
 @Entity
 public class OrderItem {
+
     private Long id;
     @JsonIgnore
     @ManyToOne

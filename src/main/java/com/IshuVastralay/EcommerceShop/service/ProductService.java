@@ -15,5 +15,5 @@ public interface ProductService {
     public Product findProductById(Long id)throws ProductException;
     public List<Product> findProductCategory(String category);
     public Page<Product> getAllProduct(String category,List<String>colors,List<String>sizes,Integer minPrice,Integer maxPrice
-    ,Integer miniDiscount,String sort,String stock,Integer pageNumber,Integer pageSize);
+    ,Integer minDiscount,String sort,String stock,Integer pageNumber,Integer pageSize);
 }
