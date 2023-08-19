@@ -11,9 +11,11 @@ public interface OrderService {
     public Order createOrder(User user, Address address);
     public Order findOrderById(Long orderId)throws OrderException;
     public List<Order> userOrderHistory(Long userId);
+    public List<Order> getAllOrders();
     public Order placedOrder(Long orderId)throws OrderException;
     public Order confirmedOrder(Long orderId)throws OrderException;
     public Order shippedOrder(Long orderId)throws OrderException;
     public Order deliveredOrder(Long orderId)throws OrderException;
     public Order cancelledOrder(Long orderId)throws OrderException;
+    public void deleteOrder(Long orderId)throws OrderException;
 }

@@ -7,10 +7,11 @@ import com.IshuVastralay.EcommerceShop.model.User;
 import com.IshuVastralay.EcommerceShop.repository.ProductRepository;
 import com.IshuVastralay.EcommerceShop.repository.ReviewRepository;
 import com.IshuVastralay.EcommerceShop.request.ReviewRequest;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Service
 public class ReviewServiceImplementation implements ReviewService{
     private ReviewRepository reviewRepository;
     private ProductService productService;

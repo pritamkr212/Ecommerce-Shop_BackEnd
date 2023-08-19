@@ -38,6 +38,11 @@ public class OrderServiceImplementation implements OrderService{
     }
 
     @Override
+    public List<Order> getAllOrders() {
+        return null;
+    }
+
+    @Override
     public Order placedOrder(Long orderId) throws OrderException {
         return null;
     }
@@ -60,5 +65,10 @@ public class OrderServiceImplementation implements OrderService{
     @Override
     public Order cancelledOrder(Long orderId) throws OrderException {
         return null;
+    }
+
+    @Override
+    public void deleteOrder(Long orderId) throws OrderException {
+
     }
 }

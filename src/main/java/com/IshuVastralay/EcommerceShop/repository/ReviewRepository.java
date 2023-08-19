@@ -9,6 +9,6 @@ import org.springframework.security.core.parameters.P;
 import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review,Long> {
-    @Query("Select r from Review Where r.product.id=:productId")
+    @Query("SELECT r FROM Review r WHERE r.product.id = :productId")
     public List<Review>getAllProductsReview(@Param("productId")Long productId);
 }
