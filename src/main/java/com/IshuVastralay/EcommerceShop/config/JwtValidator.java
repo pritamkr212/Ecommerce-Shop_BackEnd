@@ -30,7 +30,10 @@ public class JwtValidator extends OncePerRequestFilter {
             jwt=jwt.substring(7);
             try {
                 SecretKey secretKey= Keys.hmacShaKeyFor(JwtConstants.SECRET_KEY.getBytes());
-                Claims claims= Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJwt(jwt).getBody();
+                Claims claims= Jwts.parser()
+                        .setSigningKey(secretKey)
+                        .parseClaimsJws(jwt)
+                        .getBody();
                 String email=String.valueOf(claims.get("email"));
                 String authorities=String.valueOf(claims.get("authorities"));
                 List<GrantedAuthority>authorityList= AuthorityUtils.commaSeparatedStringToAuthorityList(authorities);

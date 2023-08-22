@@ -1,31 +1,54 @@
 package com.IshuVastralay.EcommerceShop.model;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+import jakarta.persistence.Table;
+
 @Entity
+@Table(name = "categories")
 public class Category {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     @NotNull
-    @Size(max=50)
+    @Size(max = 50)
     private String name;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_category_id")
     private Category parentCategory;
+
     private int level;
 
-    public Category(){}
 
-    public Category(Long id, @NotNull String name, Category parentCategory, int level) {
-        this.id = id;
-        this.name = name;
-        this.parentCategory = parentCategory;
+    public Category() {
+        // TODO Auto-generated constructor stub
+    }
+
+
+
+
+
+    public int getLevel() {
+        return level;
+    }
+
+
+    public void setLevel(int level) {
         this.level = level;
     }
+
 
     public Long getId() {
         return id;
@@ -51,11 +74,5 @@ public class Category {
         this.parentCategory = parentCategory;
     }
 
-    public int getLevel() {
-        return level;
-    }
 
-    public void setLevel(int level) {
-        this.level = level;
-    }
 }

@@ -3,9 +3,11 @@ package com.IshuVastralay.EcommerceShop.controller;
 import com.IshuVastralay.EcommerceShop.authResponse.AuthResponse;
 import com.IshuVastralay.EcommerceShop.config.JwtProvider;
 import com.IshuVastralay.EcommerceShop.exception.UserException;
+import com.IshuVastralay.EcommerceShop.model.Cart;
 import com.IshuVastralay.EcommerceShop.model.User;
 import com.IshuVastralay.EcommerceShop.repository.UserRepository;
 import com.IshuVastralay.EcommerceShop.request.LoginRequest;
+import com.IshuVastralay.EcommerceShop.service.CartService;
 import com.IshuVastralay.EcommerceShop.service.CustomUserServiceImplementation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,11 +29,13 @@ public class AuthController {
     private UserRepository userRepository;
     private JwtProvider jwtProvider;
     private PasswordEncoder passwordEncoder;
-    public AuthController(UserRepository userRepository,CustomUserServiceImplementation customUserServiceImplementation,PasswordEncoder passwordEncoder,JwtProvider jwtProvider){
+    private CartService cartService;
+    public AuthController(UserRepository userRepository,CustomUserServiceImplementation customUserServiceImplementation,PasswordEncoder passwordEncoder,JwtProvider jwtProvider,CartService cartService){
         this.customUserServiceImplementation=customUserServiceImplementation;
         this.userRepository=userRepository;
         this.passwordEncoder=passwordEncoder;
         this.jwtProvider=jwtProvider;
+        this.cartService=cartService;
     }
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse>createUserHandler(@RequestBody User user)throws UserException{
@@ -49,13 +53,16 @@ public class AuthController {
         newUser.setFirstName(firstName);
         newUser.setLastName(lastName);
         User savedUser=userRepository.save(newUser);
+
+        Cart cart=cartService.createCart(savedUser);
+
         Authentication authentication=new UsernamePasswordAuthenticationToken(savedUser.getEmail(),savedUser.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token= jwtProvider.generateToken(authentication);
         AuthResponse authResponse=new AuthResponse();
         authResponse.setJwt(token);
         authResponse.setMessage("Signup Success");
-        return new ResponseEntity<AuthResponse>(authResponse, HttpStatus.CREATED);
+            return new ResponseEntity<AuthResponse>(authResponse, HttpStatus.CREATED);
 
 
     }

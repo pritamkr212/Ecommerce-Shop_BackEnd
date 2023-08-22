@@ -11,7 +11,7 @@ import java.util.Set;
 @Entity
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "title")
@@ -182,11 +182,11 @@ public class Product {
         this.numRatings = numRatings;
     }
 
-    public Category getCateogory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCateogory(Category category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 

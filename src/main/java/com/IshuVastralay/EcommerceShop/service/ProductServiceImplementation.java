@@ -7,6 +7,8 @@ import com.IshuVastralay.EcommerceShop.model.User;
 import com.IshuVastralay.EcommerceShop.repository.CategoryRepository;
 import com.IshuVastralay.EcommerceShop.repository.ProductRepository;
 import com.IshuVastralay.EcommerceShop.request.CreateProductRequest;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -20,8 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImplementation implements ProductService{
-
-    private ProductRepository productRepository;
+    public ProductRepository productRepository;
     private UserService userService;
     private CategoryRepository categoryRepository;
     public ProductServiceImplementation(ProductRepository productRepository, UserService userService, CategoryRepository categoryRepository) {
@@ -33,29 +34,42 @@ public class ProductServiceImplementation implements ProductService{
     @Override
     public Product createProduct(CreateProductRequest createProductRequest) {
 
+
         Category topLevel=categoryRepository.findByName(createProductRequest.getTopLevelCategory());
-        if(topLevel!=null){
+
+        if(topLevel==null) {
+
             Category topLevelCategory=new Category();
             topLevelCategory.setName(createProductRequest.getTopLevelCategory());
             topLevelCategory.setLevel(1);
-            topLevel=categoryRepository.save(topLevelCategory);
+
+            topLevel= categoryRepository.save(topLevelCategory);
         }
 
-        Category secondLevel=categoryRepository.findByNameAndParent(createProductRequest.getSecondLevelCategory(),topLevel.getName());
-        if(secondLevel!=null){
+        Category secondLevel=categoryRepository.
+                findByNameAndParent(createProductRequest.getSecondLevelCategory(),topLevel.getName());
+        if(secondLevel==null) {
+
             Category secondLevelCategory=new Category();
-            secondLevelCategory.setName(createProductRequest.getTopLevelCategory());
+            secondLevelCategory.setName(createProductRequest.getSecondLevelCategory());
+            secondLevelCategory.setParentCategory(topLevel);
             secondLevelCategory.setLevel(2);
-            secondLevel=categoryRepository.save(secondLevelCategory);
+
+            secondLevel= categoryRepository.save(secondLevelCategory);
         }
 
         Category thirdLevel=categoryRepository.findByNameAndParent(createProductRequest.getThirdLevelCategory(),secondLevel.getName());
-        if(thirdLevel!=null){
+        if(thirdLevel==null) {
+
             Category thirdLevelCategory=new Category();
-            thirdLevelCategory.setName(createProductRequest.getTopLevelCategory());
-            thirdLevelCategory.setLevel(2);
+            thirdLevelCategory.setName(createProductRequest.getThirdLevelCategory());
+            thirdLevelCategory.setParentCategory(secondLevel);
+            thirdLevelCategory.setLevel(3);
+
             thirdLevel=categoryRepository.save(thirdLevelCategory);
         }
+
+
         Product product=new Product();
         product.setTitle(createProductRequest.getTitle());
         product.setColor(createProductRequest.getColor());
@@ -65,11 +79,15 @@ public class ProductServiceImplementation implements ProductService{
         product.setImageUrl(createProductRequest.getImageUrl());
         product.setBrand(createProductRequest.getBrand());
         product.setPrice(createProductRequest.getPrice());
+        product.setSizes(createProductRequest.getSizeSet());
         product.setQuantity(createProductRequest.getQuantity());
-        product.setCateogory(thirdLevel);
+        product.setCategory(thirdLevel);
         product.setCreatedAt(LocalDateTime.now());
 
-        Product savedProduct=productRepository.save(product);
+        Product savedProduct= productRepository.save(product);
+
+        System.out.println("products - "+product);
+
         return savedProduct;
     }
 
@@ -107,7 +125,9 @@ public class ProductServiceImplementation implements ProductService{
         Pageable pageable= PageRequest.of(pageNumber,pageSize);
         List<Product>productList=productRepository.filterProducts(category,minPrice,maxPrice,miniDiscount,sort);
         if(!colors.isEmpty()){
-            productList=productList.stream().filter(p->colors.stream().anyMatch(c-> category.equalsIgnoreCase(p.getColor()))).collect(Collectors.toList());
+            productList=productList.stream()
+                    .filter(p->colors.stream().anyMatch(c-> c.equalsIgnoreCase(p.getColor())))
+                    .collect(Collectors.toList());
         }
         if(stock!=null){
             if (stock.equals("in_stock")){
